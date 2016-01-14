@@ -156,10 +156,11 @@ emotion_proportion <- function(data) {
         neutral_percentage[i] <- neutral / total
         i <- i + 1
     }
-    for (list in c(pos_percentage, neg_percentage, neutral_percentage)) {
-        j = 1
+    for (list in list(pos_percentage, neg_percentage, neutral_percentage)) {
         for(j in c(1:length(list))){
-            if (j == 1 | j == length(list) ) {
+            if (j == 1) {
+                list[j] <- list[j]
+            } else if ( j == length(list) ) {
                 list[j] <- list[j]
             } else {
                 list[j] <- 0.25 * list[j - 1] + 0.5 * list[j] + 0.25 * list[j + 1]
