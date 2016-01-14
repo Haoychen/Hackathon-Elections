@@ -1,4 +1,5 @@
 twitter.data <- read.csv('Twitter_export.csv')
+twitter.data$Date <- as.Date(twitter.data$Date, '%Y-%m-%d')
 library(twitteR)
 library(plyr)
 library(ggplot2)
@@ -53,7 +54,7 @@ neg <- scan('~/Project/Hackathon-Elections/negative-words.txt',
             what = 'character', comment.char = ';')
 
 scores <- score.sentiment(tweets, pos, neg, .progress='text')
-twitter.data <- cbind(twitter.data, scores$score)
+twitter.data <- cbind(twitter.data, score = scores$score)
 
 
 
@@ -128,3 +129,43 @@ Santorum.text <- data.frame(Text = Santorum_text, Name = 'Santorum')
 text.data <- rbind(Bobby.text, Bush.text, Chris.text, Cruz.text, Hillary.text, Jim.text, John.text, 
                    Lincold.text, Martin.text, Pataki.text, Paul.text, Perry.text, Rick.text, Rubio.text,
                    Sanders.text, Santorum.text, Trump.text)
+
+
+emotion_proportion <- function(data) {
+    dates <- unique(data$Date)
+    pos_percentage <- c()
+    neg_percentage <- c()
+    neutral_percentage <- c()
+    i = 1
+    for (date in dates) {
+        pos = 0
+        neg = 0
+        neutral = 0
+        for (score in data[data$Date == date,]$score) {
+            if (score > 0) {
+                pos <- pos + 1
+            } else if (score < 0) {
+                neg <- neg + 1
+            } else {
+                neutral <- neutral + 1
+            }
+        }
+        total <- pos + neg + neutral
+        pos_percentage[i] <- pos / total
+        neg_percentage[i] <- neg / total
+        neutral_percentage[i] <- neutral / total
+        i <- i + 1
+    }
+    for (list in c(pos_percentage, neg_percentage, neutral_percentage)) {
+        j = 1
+        for(j in c(1:length(list))){
+            if (j == 1 | j == length(list) ) {
+                list[j] <- list[j]
+            } else {
+                list[j] <- 0.25 * list[j - 1] + 0.5 * list[j] + 0.25 * list[j + 1]
+            }
+        }
+    }
+    result <- data.frame(Date = dates, Pos = pos_percentage, Neg = neg_percentage, Neutral = neutral_percentage)
+    return(result)
+}
