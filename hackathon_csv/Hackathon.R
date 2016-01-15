@@ -18,7 +18,7 @@ score.sentiment = function(sentences, pos.words, neg.words, .progress='none')
         
         # clean up sentences with R's regex-driven global substitute, gsub():
         sentence = gsub('[[:punct:]]', '', sentence)
-        sentence = gsub('[[:cntrl:]]', '', sentence)
+        sentence = gsub('[[:punct:]]', '', sentence)
         sentence = gsub('\\d+', '', sentence)
         # and convert to lower case:
         sentence = tolower(sentence)
